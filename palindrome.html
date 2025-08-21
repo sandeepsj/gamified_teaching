@@ -365,6 +365,7 @@
         // --- Game Data ---
         const allGameData = {
           level1: [
+            // Palindromes (true)
             { word: "racecar", isPalindrome: true },
             { word: "level", isPalindrome: true },
             { word: "madam", isPalindrome: true },
@@ -373,10 +374,24 @@
             { word: "stats", isPalindrome: true },
             { word: "tenet", isPalindrome: true },
             { word: "solos", isPalindrome: true },
+            { word: "civic", isPalindrome: true },
+            { word: "refer", isPalindrome: true },
+            { word: "radar", isPalindrome: true },
+            { word: "deed", isPalindrome: true },
+            { word: "peep", isPalindrome: true },
+            { word: "noon", isPalindrome: true },
             { word: "wow", isPalindrome: true },
             { word: "mom", isPalindrome: true },
             { word: "dad", isPalindrome: true },
-            { word: "noon", isPalindrome: true },
+            { word: "pop", isPalindrome: true },
+            { word: "minim", isPalindrome: true },
+            { word: "redder", isPalindrome: true },
+            { word: "repaper", isPalindrome: true },
+            { word: "reviver", isPalindrome: true },
+            { word: "deified", isPalindrome: true },
+            { word: "rotavator", isPalindrome: true },
+            { word: "sagas", isPalindrome: true },
+            // Non‑palindromes (false)
             { word: "hello", isPalindrome: false },
             { word: "world", isPalindrome: false },
             { word: "power", isPalindrome: false },
@@ -389,6 +404,33 @@
             { word: "awesome", isPalindrome: false },
             { word: "friend", isPalindrome: false },
             { word: "magic", isPalindrome: false },
+            { word: "school", isPalindrome: false },
+            { word: "table", isPalindrome: false },
+            { word: "chair", isPalindrome: false },
+            { word: "bottle", isPalindrome: false },
+            { word: "window", isPalindrome: false },
+            { word: "garden", isPalindrome: false },
+            { word: "pencil", isPalindrome: false },
+            { word: "notebook", isPalindrome: false },
+            { word: "music", isPalindrome: false },
+            { word: "movie", isPalindrome: false },
+            { word: "planet", isPalindrome: false },
+            { word: "animal", isPalindrome: false },
+            { word: "teacher", isPalindrome: false },
+            { word: "student", isPalindrome: false },
+            { word: "library", isPalindrome: false },
+            { word: "mountain", isPalindrome: false },
+            { word: "river", isPalindrome: false },
+            { word: "ocean", isPalindrome: false },
+            { word: "family", isPalindrome: false },
+            { word: "happy", isPalindrome: false },
+            { word: "sunny", isPalindrome: false },
+            { word: "cloudy", isPalindrome: false },
+            { word: "rainbow", isPalindrome: false },
+            { word: "cookie", isPalindrome: false },
+            { word: "pizza", isPalindrome: false },
+            { word: "burger", isPalindrome: false },
+            { word: "sandwich", isPalindrome: false },
           ],
           level2: [
             "civic",
@@ -402,20 +444,90 @@
             "noon",
             "malayalam",
             "redivider",
+            "deed",
+            "peep",
+            "level",
+            "madam",
+            "kayak",
+            "radar",
+            "wow",
+            "pop",
+            "minim",
+            "redder",
+            "repaper",
+            "rotavator",
+            "sagas",
+            "racecar",
+            "anna",
+            "hannah",
+            "bob",
+            "eve",
+            "ada",
+            "otto",
+            "elle",
+            "nun",
+            "mom",
+            "dad",
+            "peep",
+            "noon",
+            "civic",
+            "refer",
+            "radar",
+            "tenet",
+            "leveler",
+            "wow",
+            "madam",
+            "minim",
+            "deified",
+            "reviver",
+            "rotor",
+            "solos",
+            "pop",
           ],
           level3: [
+            "Never odd or even",
+            "Madam, I'm Adam",
+            "Able was I ere I saw Elba",
+            "A man, a plan, a canal, Panama",
             "Was it a car or a cat I saw",
             "No lemon no melon",
-            "Never odd or even",
-            "A nut for a jar of tuna",
-            "Don't nod",
-            "I did did I",
+            "Do geese see God",
             "Step on no pets",
-            "Top spot",
-            "Borrow or rob",
-            "Yo banana boy",
             "Mr Owl ate my metal worm",
             "Go hang a salami Im a lasagna hog",
+            "Borrow or rob",
+            "Yo banana boy",
+            "No x in Nixon",
+            "Too bad I hid a boot",
+            "Poor Dan is in a droop",
+            "Madam in Eden Im Adam",
+            "I did did I",
+            "Dont nod",
+            "Was it a rat I saw",
+            "Live on time emit no evil",
+            "Nurse I spy gypsies run",
+            "Sir I demand I am a maid named Iris",
+            "A Toyotas a Toyota",
+            "Are we not drawn onward we few drawn onward to new era",
+            "Dennis and Edna sinned",
+            "Was it Eliots toilet I saw",
+            "Lisa Bonet ate no basil",
+            "Satan oscillate my metallic sonatas",
+            "Stressed was I ere I saw desserts",
+            "No trace not one carton",
+            "Ma is a nun as I am",
+            "Never a foot too far even",
+            "Eva can I see bees in a cave",
+            "A Santa at NASA",
+            "No sir away a war is on",
+            "Do nine men interpret nine men I nod",
+            "Now sir a war is won",
+            "Won ton? Not now",
+            "Kayak I kayak",
+            "Was it a bat I saw",
+            "Top spot",
+            "Never odd or even numbers? Even or odd never",
+            "Red rum sir is murder",
           ],
         };
 
@@ -593,13 +705,13 @@
         }
 
         function revealMaskPiece() {
-          // Find the first unrevealed piece and reveal it
-          const pieceToReveal = maskPieces.find(
+          // Reveal a random unrevealed piece (instead of the first one)
+          const remaining = maskPieces.filter(
             (p) => !p.classList.contains("revealed")
           );
-          if (pieceToReveal) {
-            pieceToReveal.classList.add("revealed");
-          }
+          if (remaining.length === 0) return;
+          const idx = Math.floor(Math.random() * remaining.length);
+          remaining[idx].classList.add("revealed");
         }
 
         function hideMaskPiece() {
@@ -693,8 +805,13 @@
         }
 
         function selectRandomItems(arr, num) {
-          const shuffled = [...arr].sort(() => 0.5 - Math.random());
-          return shuffled.slice(0, num);
+          // Fisher-Yates shuffle for unbiased random selection
+          const a = arr.slice();
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a.slice(0, Math.min(num, a.length));
         }
       });
     </script>
