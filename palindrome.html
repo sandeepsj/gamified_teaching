@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Palindrome Power!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* General Styling */
+      :root {
+        --bg-color: #f0f8ff;
+        --primary-color: #ff69b4;
+        --secondary-color: #1e90ff;
+        --accent-color: #ffd700;
+        --correct-color: #32cd32;
+        --incorrect-color: #ff4136;
+        --text-color: #333;
+        --white-color: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Nunito", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        text-align: center;
+      }
+
+      /* Main Game Container */
+      .container {
+        background: var(--white-color);
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 900px;
+        transition: transform 0.3s ease;
+      }
+
+      /* Typography */
+      h1 {
+        font-family: "Luckiest Guy", cursive;
+        color: var(--primary-color);
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 0 var(--secondary-color);
+      }
+
+      h2 {
+        font-family: "Luckiest Guy", cursive;
+        color: var(--secondary-color);
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      /* Buttons */
+      .btn {
+        font-family: "Luckiest Guy", cursive;
+        font-size: 1.3rem;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--white-color);
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-start {
+        background: linear-gradient(45deg, var(--primary-color), #ff85c1);
+      }
+
+      .btn-start:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-choice {
+        background-color: var(--secondary-color);
+        margin: 0 10px;
+      }
+
+      .btn-choice:hover {
+        background-color: #4caaff;
+        transform: scale(1.1);
+      }
+
+      .btn-check {
+        background-color: var(--accent-color);
+        color: var(--text-color);
+      }
+
+      .btn-check:hover {
+        background-color: #ffeb80;
+        transform: scale(1.1);
+      }
+
+      /* Game Screens */
+      .screen {
+        display: none; /* Hidden by default */
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      /* Game Screen Layout */
+      #game-screen-layout {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+      .game-main {
+        flex: 2;
+        min-width: 300px;
+      }
+      .game-sidebar {
+        flex: 1;
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Image Unmasking Feature */
+      #image-puzzle-container {
+        width: 100%;
+        max-width: 250px;
+        aspect-ratio: 1 / 1;
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+      #puzzle-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      #puzzle-mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: grid;
+        transition: opacity 0.5s ease;
+      }
+      .mask-piece {
+        background-color: var(--primary-color);
+        transition: background-color 0.5s ease-in-out, border 0.5s ease-in-out;
+        border: 1px solid var(--white-color);
+      }
+      .mask-piece.revealed {
+        background-color: transparent;
+        border: none;
+      }
+
+      /* Game UI Elements */
+      .game-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      #level-indicator {
+        background-color: var(--secondary-color);
+        color: var(--white-color);
+        padding: 5px 15px;
+        border-radius: 20px;
+      }
+
+      #score-tracker {
+        background-color: var(--accent-color);
+        color: var(--text-color);
+        padding: 5px 15px;
+        border-radius: 20px;
+      }
+
+      .word-display {
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: 4px;
+        padding: 15px;
+        margin: 1.5rem 0;
+        background-color: #eef6ff;
+        border-radius: 15px;
+        border: 3px dashed var(--secondary-color);
+        color: var(--primary-color);
+        word-wrap: break-word;
+      }
+
+      .input-field {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.2rem;
+        text-align: center;
+        border: 3px solid var(--secondary-color);
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        font-family: "Nunito", sans-serif;
+      }
+
+      .input-field:focus {
+        outline: none;
+        box-shadow: 0 0 10px var(--secondary-color);
+      }
+
+      #message {
+        font-size: 1.3rem;
+        font-weight: 700;
+        height: 30px;
+        margin-top: 1rem;
+        transition: color 0.3s;
+      }
+
+      /* Animations */
+      @keyframes correct-animation {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes incorrect-animation {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-10px);
+        }
+        75% {
+          transform: translateX(10px);
+        }
+      }
+
+      .correct {
+        color: var(--correct-color);
+        animation: correct-animation 0.5s ease;
+      }
+      .incorrect {
+        color: var(--incorrect-color);
+        animation: incorrect-animation 0.5s ease;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        #game-screen-layout {
+          flex-direction: column-reverse;
+        }
+        .container {
+          padding: 1.5rem;
+        }
+        h1 {
+          font-size: 2.5rem;
+        }
+        .word-display {
+          font-size: 1.8rem;
+        }
+        .game-header {
+          flex-direction: column;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Start Screen -->
+      <div id="start-screen" class="screen active">
+        <h1>Palindrome Power!</h1>
+        <p>
+          Welcome back, hero! Get points for right answers, but be careful,
+          you'll lose points for wrong ones! Uncover a secret picture with every
+          correct answer. Ready for the challenge?
+        </p>
+        <button id="start-button" class="btn btn-start">Start Game</button>
+      </div>
+
+      <!-- Game Screen -->
+      <div id="game-screen" class="screen">
+        <div id="game-screen-layout">
+          <div class="game-main">
+            <div class="game-header">
+              <div id="level-indicator">Level 1</div>
+              <div id="score-tracker">Score: 0</div>
+            </div>
+            <div id="game-area">
+              <!-- Game content will be dynamically inserted here -->
+            </div>
+            <div id="message"></div>
+          </div>
+          <div class="game-sidebar">
+            <h2>Secret Picture</h2>
+            <div id="image-puzzle-container">
+              <img
+                id="puzzle-image"
+                src=""
+                alt="Secret Puzzle Image"
+                onerror="this.onerror=null;this.src='https.placehold.co/250x250/cccccc/ffffff?text=Image+Error';"
+              />
+              <div id="puzzle-mask"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Final Screen -->
+      <div id="final-screen" class="screen">
+        <h2>You're a Palindrome Pro!</h2>
+        <p id="final-score">Your final score is: 100</p>
+        <p>Thanks for playing! You did an amazing job.</p>
+        <button id="play-again-button" class="btn btn-start">Play Again</button>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- DOM Elements ---
+        const startScreen = document.getElementById("start-screen");
+        const gameScreen = document.getElementById("game-screen");
+        const finalScreen = document.getElementById("final-screen");
+        const startButton = document.getElementById("start-button");
+        const playAgainButton = document.getElementById("play-again-button");
+        const levelIndicator = document.getElementById("level-indicator");
+        const scoreTracker = document.getElementById("score-tracker");
+        const gameArea = document.getElementById("game-area");
+        const messageEl = document.getElementById("message");
+        const finalScoreEl = document.getElementById("final-score");
+        const puzzleImage = document.getElementById("puzzle-image");
+        const puzzleMask = document.getElementById("puzzle-mask");
+
+        // --- Game Data ---
+        const allGameData = {
+          level1: [
+            { word: "racecar", isPalindrome: true },
+            { word: "level", isPalindrome: true },
+            { word: "madam", isPalindrome: true },
+            { word: "kayak", isPalindrome: true },
+            { word: "rotor", isPalindrome: true },
+            { word: "stats", isPalindrome: true },
+            { word: "tenet", isPalindrome: true },
+            { word: "solos", isPalindrome: true },
+            { word: "wow", isPalindrome: true },
+            { word: "mom", isPalindrome: true },
+            { word: "dad", isPalindrome: true },
+            { word: "noon", isPalindrome: true },
+            { word: "hello", isPalindrome: false },
+            { word: "world", isPalindrome: false },
+            { word: "power", isPalindrome: false },
+            { word: "game", isPalindrome: false },
+            { word: "apple", isPalindrome: false },
+            { word: "banana", isPalindrome: false },
+            { word: "orange", isPalindrome: false },
+            { word: "grape", isPalindrome: false },
+            { word: "computer", isPalindrome: false },
+            { word: "awesome", isPalindrome: false },
+            { word: "friend", isPalindrome: false },
+            { word: "magic", isPalindrome: false },
+          ],
+          level2: [
+            "civic",
+            "deified",
+            "reviver",
+            "rotator",
+            "solos",
+            "tenet",
+            "refer",
+            "stats",
+            "noon",
+            "malayalam",
+            "redivider",
+          ],
+          level3: [
+            "Was it a car or a cat I saw",
+            "No lemon no melon",
+            "Never odd or even",
+            "A nut for a jar of tuna",
+            "Don't nod",
+            "I did did I",
+            "Step on no pets",
+            "Top spot",
+            "Borrow or rob",
+            "Yo banana boy",
+            "Mr Owl ate my metal worm",
+            "Go hang a salami Im a lasagna hog",
+          ],
+        };
+
+        const imageSources = [
+          "https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          "https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          "https://images.pexels.com/photos/1199590/pexels-photo-1199590.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          "https://images.pexels.com/photos/7210754/pexels-photo-7210754.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          "https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          "https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          "https://images.pexels.com/photos/162140/duckling-birds-yellow-fluffy-162140.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        ];
+
+        const QUESTIONS_PER_LEVEL = 3;
+        const MASK_GRID_SIZE = 3; // 3x3 grid to match 9 total questions
+
+        // --- Game State ---
+        let currentLevel = 1;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questionsForGame = {};
+        let revealedPiecesCount = 0;
+        let maskPieces = [];
+
+        // --- Event Listeners ---
+        startButton.addEventListener("click", startGame);
+        playAgainButton.addEventListener("click", startGame);
+
+        // --- Game Flow Functions ---
+        function startGame() {
+          // Reset game state
+          currentLevel = 1;
+          currentQuestionIndex = 0;
+          score = 0;
+          revealedPiecesCount = 0;
+          updateScoreDisplay();
+
+          // Select random questions for this game session
+          questionsForGame.level1 = selectRandomItems(
+            allGameData.level1,
+            QUESTIONS_PER_LEVEL
+          );
+          questionsForGame.level2 = selectRandomItems(
+            allGameData.level2,
+            QUESTIONS_PER_LEVEL
+          );
+          questionsForGame.level3 = selectRandomItems(
+            allGameData.level3,
+            QUESTIONS_PER_LEVEL
+          );
+
+          setupImagePuzzle();
+
+          // Switch screens
+          startScreen.classList.remove("active");
+          finalScreen.classList.remove("active");
+          gameScreen.classList.add("active");
+
+          loadLevel();
+        }
+
+        function loadLevel() {
+          levelIndicator.textContent = `Level ${currentLevel}`;
+          currentQuestionIndex = 0;
+          messageEl.textContent = "";
+
+          switch (currentLevel) {
+            case 1:
+              setupLevel1();
+              break;
+            case 2:
+              setupLevel2();
+              break;
+            case 3:
+              setupLevel3();
+              break;
+            default:
+              showFinalScreen();
+          }
+        }
+
+        function nextQuestion() {
+          currentQuestionIndex++;
+          let levelData;
+          switch (currentLevel) {
+            case 1:
+              levelData = questionsForGame.level1;
+              break;
+            case 2:
+              levelData = questionsForGame.level2;
+              break;
+            case 3:
+              levelData = questionsForGame.level3;
+              break;
+          }
+
+          if (currentQuestionIndex < levelData.length) {
+            // Load next question in the same level
+            switch (currentLevel) {
+              case 1:
+                setupLevel1();
+                break;
+              case 2:
+                setupLevel2();
+                break;
+              case 3:
+                setupLevel3();
+                break;
+            }
+          } else {
+            // Move to the next level
+            currentLevel++;
+            loadLevel();
+          }
+        }
+
+        function showFinalScreen() {
+          finalScoreEl.textContent = `Your final score is: ${score}`;
+          gameScreen.classList.remove("active");
+          finalScreen.classList.add("active");
+        }
+
+        // --- Answer Handling ---
+        function handleAnswer(isCorrect) {
+          messageEl.classList.remove("correct", "incorrect");
+
+          if (isCorrect) {
+            score += 10;
+            messageEl.textContent = "Awesome! That's correct!";
+            messageEl.classList.add("correct");
+            revealMaskPiece();
+          } else {
+            score -= 5;
+            messageEl.textContent = "Oops! Not quite right.";
+            messageEl.classList.add("incorrect");
+            hideMaskPiece();
+          }
+          updateScoreDisplay();
+
+          // Disable buttons/inputs to prevent multiple submissions
+          const interactiveElements =
+            gameArea.querySelectorAll("button, input");
+          interactiveElements.forEach((el) => (el.disabled = true));
+
+          setTimeout(() => {
+            messageEl.textContent = "";
+            messageEl.classList.remove("correct", "incorrect");
+            nextQuestion();
+          }, 1500);
+        }
+
+        function updateScoreDisplay() {
+          scoreTracker.textContent = `Score: ${score}`;
+        }
+
+        // --- Image Puzzle Functions ---
+        function setupImagePuzzle() {
+          // Select a random image
+          puzzleImage.src = selectRandomItems(imageSources, 1)[0];
+
+          // Create mask
+          puzzleMask.innerHTML = "";
+          // Dynamically set grid style to match MASK_GRID_SIZE
+          puzzleMask.style.gridTemplateColumns = `repeat(${MASK_GRID_SIZE}, 1fr)`;
+          puzzleMask.style.gridTemplateRows = `repeat(${MASK_GRID_SIZE}, 1fr)`;
+
+          maskPieces = [];
+          const totalPieces = MASK_GRID_SIZE * MASK_GRID_SIZE;
+          for (let i = 0; i < totalPieces; i++) {
+            const piece = document.createElement("div");
+            piece.classList.add("mask-piece");
+            puzzleMask.appendChild(piece);
+            maskPieces.push(piece);
+          }
+        }
+
+        function revealMaskPiece() {
+          // Find the first unrevealed piece and reveal it
+          const pieceToReveal = maskPieces.find(
+            (p) => !p.classList.contains("revealed")
+          );
+          if (pieceToReveal) {
+            pieceToReveal.classList.add("revealed");
+          }
+        }
+
+        function hideMaskPiece() {
+          // Find the last revealed piece and hide it
+          const revealedPieces = [...maskPieces].filter((p) =>
+            p.classList.contains("revealed")
+          );
+          if (revealedPieces.length > 0) {
+            revealedPieces[revealedPieces.length - 1].classList.remove(
+              "revealed"
+            );
+          }
+        }
+
+        // --- Level Setup Functions ---
+        function setupLevel1() {
+          const question = questionsForGame.level1[currentQuestionIndex];
+          gameArea.innerHTML = `
+                    <h2>Level 1: Find the Palindrome</h2>
+                    <p>Is this word a palindrome?</p>
+                    <div class="word-display">${question.word}</div>
+                    <div class="button-container">
+                        <button class="btn btn-choice" data-choice="true">Palindrome</button>
+                        <button class="btn btn-choice" data-choice="false">Not a Palindrome</button>
+                    </div>
+                `;
+          gameArea.querySelectorAll(".btn-choice").forEach((button) => {
+            button.addEventListener("click", (e) => {
+              const userChoice = e.target.dataset.choice === "true";
+              handleAnswer(userChoice === question.isPalindrome);
+            });
+          });
+        }
+
+        function setupLevel2() {
+          const word = questionsForGame.level2[currentQuestionIndex];
+          const scrambledWord = scrambleWord(word);
+          gameArea.innerHTML = `
+                    <h2>Level 2: Build a Palindrome</h2>
+                    <p>Unscramble the letters to form a palindrome!</p>
+                    <div class="word-display">${scrambledWord}</div>
+                    <input type="text" id="level2-input" class="input-field" placeholder="Type your answer">
+                    <button id="level2-check" class="btn btn-check">Check</button>
+                `;
+          const input = document.getElementById("level2-input");
+          const checkButton = document.getElementById("level2-check");
+          checkButton.addEventListener("click", () =>
+            handleAnswer(input.value.trim().toLowerCase() === word)
+          );
+          input.addEventListener(
+            "keyup",
+            (e) => e.key === "Enter" && checkButton.click()
+          );
+        }
+
+        function setupLevel3() {
+          const phrase = questionsForGame.level3[currentQuestionIndex];
+          gameArea.innerHTML = `
+                    <h2>Level 3: Solve the Secret Phrase</h2>
+                    <p>This phrase is a palindrome. Can you type it backward?</p>
+                    <div class="word-display" style="font-size: 1.2rem; letter-spacing: 2px;">${phrase}</div>
+                    <input type="text" id="level3-input" class="input-field" placeholder="Type the phrase backward">
+                    <button id="level3-check" class="btn btn-check">Check</button>
+                `;
+          const input = document.getElementById("level3-input");
+          const checkButton = document.getElementById("level3-check");
+          checkButton.addEventListener("click", () => {
+            const userAnswer = input.value.trim();
+            const reversedPhrase = phrase.split("").reverse().join("");
+            const normalizedUserAnswer = userAnswer
+              .replace(/[^a-zA-Z0-9]/g, "")
+              .toLowerCase();
+            const normalizedReversedPhrase = reversedPhrase
+              .replace(/[^a-zA-Z0-9]/g, "")
+              .toLowerCase();
+            handleAnswer(normalizedUserAnswer === normalizedReversedPhrase);
+          });
+          input.addEventListener(
+            "keyup",
+            (e) => e.key === "Enter" && checkButton.click()
+          );
+        }
+
+        // --- Helper Functions ---
+        function scrambleWord(word) {
+          let scrambled = word
+            .split("")
+            .sort(() => 0.5 - Math.random())
+            .join("");
+          return scrambled === word ? scrambleWord(word) : scrambled;
+        }
+
+        function selectRandomItems(arr, num) {
+          const shuffled = [...arr].sort(() => 0.5 - Math.random());
+          return shuffled.slice(0, num);
+        }
+      });
+    </script>
+  </body>
+</html>
